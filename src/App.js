@@ -1,23 +1,68 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import TextField from '@mui/material/TextField';
+import  Button  from '@mui/material/Button';
 
+const TodoItemInputField = (props) => {
+  const [input, setInput] = useState("");
+
+  const onSubmit = ()=>{
+    props.onSubmit(input);
+    setInput("");
+  }
+  return (
+    <div>
+      <TextField 
+        id="outlined-basic" 
+        label="Todo Item" 
+        value={input} 
+        variant="outlined" 
+        onChange={(e)=>{setInput(e.target.value)}}
+      />
+      <Button variant='outlined' onClick={onSubmit}>submit</Button>
+    </div>
+  )
+}
+
+const TodoItemList = (props) =>{
+
+  const todoList = props.todoItemList.map((todoItem, index) => {
+    return <TodoItem key={todoItem.id} todoItem={todoItem}/>;
+  });
+
+    
+  return(
+    <div>
+      <ul>{todoList}</ul>
+    </div>
+  );
+};
+
+const TodoItem = (props) => {
+  const style = props.todoItem.isFinished ? {textDecoration:'line-through'} : {};
+  return (
+    <li>
+      <span>{props.todoItem.todoItemContent}</span>
+    </li>
+  )
+}
+
+let todoItemId = 0;
 function App() {
+
+  const [todoItemList, setTodoItemList] = useState([]);
+  const onSubmit =(newTodoItem) =>{
+    setTodoItemList([...todoItemList, {
+      id: todoItemId++,
+      todoItemContent: newTodoItem,
+      isFinished: false
+    }]);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hello React
-        </a>
-      </header>
+      <TodoItemInputField onSubmit={onSubmit}/>
+      <TodoItemList todoItemList={todoItemList} />
     </div>
   );
 }
